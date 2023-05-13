@@ -5,5 +5,6 @@ public class TesteGSON {
         RequisicaoChatGPT req = new RequisicaoChatGPT("text-davinci-003","Porque o céu é azul ?", 150);
         Gson gson = new Gson();
         String reqJSON = gson.toJson(req);
+        System.out.println(reqJSON);
     }
 }

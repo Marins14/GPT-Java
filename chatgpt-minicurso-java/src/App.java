@@ -5,7 +5,17 @@ public class App {
     public static void main(String[] args) throws Exception {
         Properties properties = new Properties();
         properties.load(new FileInputStream("src/app.properties"));
-        String OPEN_AI_KEY = properties.getProperty("OPEN_AI_KEY");
-        //System.out.println(OPEN_AI_KEY);
+        String OPENAI_API_KEY = properties.getProperty("OPENAI_API_KEY");
+        System.out.println(OPENAI_API_KEY);
+        
+        ChatGPTclient client = new ChatGPTclient();
+        String pergunta = client.criarPergunta(
+            OPENAI_API_KEY,
+            "Python",
+            "Alternativa",
+            "Muito dificíl",
+            null);
+        System.out.println(pergunta);
+
     }
 }

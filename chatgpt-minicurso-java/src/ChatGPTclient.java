@@ -1,42 +1,37 @@
-import java.util.concurrent.ExecutionException;
-import okhttp3.*;
 import com.google.gson.Gson;
-
-import okhttp3.MediaType;
-import okhttp3.RequestBody;
+import okhttp3.*;
 
 public class ChatGPTclient {
     public String criarPergunta(
-        String OPEN_AI_KEY,
-        String assunto, 
+        String OPENAI_API_KEY,
+        String assunto,
         String tipo,
-        String dificuldade, 
+        String dificuldade,
         String perguntaExemplo
+    ) throws Exception {
+        String prompt = String.format("Elabore uma questão sobre %s, do tipo %s, de dificuldade %s", assunto, tipo, dificuldade);
+        prompt += perguntaExemplo == null ? "" : String.format("Use a seguinte questão de exemplo: %s", perguntaExemplo);
 
-    ) throws Exception{
+        RequisicaoChatGPT requisicaoChatGPT = new RequisicaoChatGPT("text-davinci-003", prompt, 150);
         
-        String prompt = String.format(
-            "Elabora uma questão sobre  %s, do tipo %s, de dificuldade %s ",
-            assunto, tipo, dificuldade
-        );
-        prompt += perguntaExemplo == null ? "" : String.format(
-            "Use a sequinte questão de exemplo: %s ", perguntaExemplo
-        );
-
-        RequisicaoChatGPT requisicaochatgpt = 
-        new RequisicaoChatGPT(
-            "text-davinci-003",prompt,150
-        );
         Gson gson = new Gson();
-        String json = gson.toJson(requisicaochatgpt);
-
-        RequestBody requestbody = 
-            RequestBody.create(json,MediaType.parse("application/json"));
+        String json = gson.toJson(requisicaoChatGPT);
         
+        RequestBody requestBody = RequestBody.create(json, MediaType.parse("application/json"));
         OkHttpClient client = new OkHttpClient();
 
-        
-        
-        return "";
+        Request request = new Request.Builder()
+            .url("https://api.openai.com/v1/completions")
+            .addHeader("Content-Type", "application/json")
+            .addHeader("Authorization", "Bearer " + OPENAI_API_KEY)
+            .post(requestBody)
+            .build();
+        Response response = client.newCall(request).execute();
+        System.out.println(response);
+        RespostaChatGPT resposta = gson.fromJson(response.body().string(), RespostaChatGPT.class);
+        System.out.println(resposta);
+        String completion = resposta.getChoices().get(0).getText();
+
+        return completion;
     }
 }

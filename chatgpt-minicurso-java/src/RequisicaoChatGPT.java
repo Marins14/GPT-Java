@@ -12,5 +12,5 @@ import lombok.Setter;
 public class RequisicaoChatGPT {
     private String model;
     private String prompt;
-    private int max_token;
+    private int max_tokens;
 }
